@@ -1,6 +1,6 @@
-// --- script.js v4 --- Colisão Barra-Bola e Game Over ---
+// --- script.js v5 --- Adiciona Pontuação ---
 
-console.log("Script v4 carregado! (Colisão e Game Over)");
+console.log("Script v5 carregado! (Com Pontuação)");
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -8,15 +8,15 @@ const ctx = canvas.getContext('2d');
 // --- Variáveis da Bola ---
 let ballRadius = 10;
 let ballX = canvas.width / 2;
-let ballY = canvas.height / 3; // Começar um pouco mais acima
-let dx = 3; // Velocidade X
-let dy = 3; // Velocidade Y (começar caindo)
+let ballY = canvas.height / 3;
+let dx = 3;
+let dy = 3;
 
 // --- Variáveis da Barra ---
 let paddleHeight = 15;
 let paddleWidth = 100;
 let paddleX = (canvas.width - paddleWidth) / 2;
-const PADDLE_Y_OFFSET = 20; // Distância da borda inferior
+const PADDLE_Y_OFFSET = 20;
 let paddleY = canvas.height - paddleHeight - PADDLE_Y_OFFSET;
 let paddleSpeed = 7;
 
@@ -24,9 +24,10 @@ let paddleSpeed = 7;
 let rightPressed = false;
 let leftPressed = false;
 
-// --- Variável de Estado do Jogo --- <<< NOVO
+// --- Variáveis de Estado do Jogo ---
 let gameOver = false;
-let animationFrameId; // Para referência futura se quisermos parar/cancelar a animação
+let animationFrameId;
+let score = 0; // <<< VARIÁVEL DA PONTUAÇÃO
 
 // --- Listeners de Evento do Teclado ---
 document.addEventListener("keydown", keyDownHandler, false);
@@ -47,7 +48,7 @@ function keyUpHandler(e) {
 function drawBall() {
     ctx.beginPath();
     ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
-    ctx.fillStyle = "#DDDDFF"; // Cor da lua
+    ctx.fillStyle = "#DDDDFF"; // Lua
     ctx.fill();
     ctx.closePath();
 }
@@ -55,20 +56,26 @@ function drawBall() {
 function drawPaddle() {
     ctx.beginPath();
     ctx.rect(paddleX, paddleY, paddleWidth, paddleHeight);
-    ctx.fillStyle = "#AAAAFF"; // Cor da barra
+    ctx.fillStyle = "#AAAAFF"; // Barra/Fantasma
     ctx.fill();
     ctx.closePath();
 }
 
-// --- NOVA Função para Desenhar Game Over ---
+// --- NOVA Função para Desenhar a Pontuação ---
+function drawScore() {
+    ctx.font = "16px Arial"; // Define a fonte
+    ctx.fillStyle = "#FFFFFF"; // Define a cor (branco)
+    ctx.textAlign = "left"; // Alinha texto à esquerda
+    ctx.textBaseline = "top"; // Alinha pelo topo
+    // Desenha o texto no canto superior esquerdo com uma pequena margem
+    ctx.fillText("Pontos: " + score, 8, 8);
+}
+
 function drawGameOver() {
     ctx.font = "48px 'Courier New', Courier, monospace";
     ctx.fillStyle = "red";
-    ctx.textAlign = "center"; // Centraliza o texto horizontalmente
-    // Desenha o texto no meio do canvas
+    ctx.textAlign = "center";
     ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
-
-    // Adiciona instrução para reiniciar
     ctx.font = "20px 'Courier New', Courier, monospace";
     ctx.fillStyle = "white";
     ctx.fillText("Pressione F5 para reiniciar", canvas.width / 2, canvas.height / 2 + 40);
@@ -77,55 +84,45 @@ function drawGameOver() {
 // --- Lógica de Movimento e Colisão ---
 
 function updateGame() {
-    // Colisão com paredes laterais (Esquerda/Direita)
+    // Colisão com paredes laterais
     if (ballX + dx > canvas.width - ballRadius || ballX + dx < ballRadius) {
         dx = -dx;
     }
 
     // Colisão com parede superior
     if (ballY + dy < ballRadius) {
-        dy = -dy; // Rebate no topo
+        dy = -dy;
     }
-    // Verifica colisão com a parte INFERIOR (Barra ou Fim de Jogo)
+    // Verifica colisão com a parte INFERIOR
     else if (ballY + dy > canvas.height - ballRadius - PADDLE_Y_OFFSET) {
-        // Verifica se está na altura da barra (ou quase passando)
         if (ballY + dy > paddleY - ballRadius) {
-            // Verifica se a bola está HORIZONTALMENTE sobre a barra
             if (ballX > paddleX && ballX < paddleX + paddleWidth) {
                 // COLIDIU COM A BARRA!
-                dy = -dy; // Inverte a direção vertical
-                console.log("Bateu na barra!");
-                // Opcional: Poderíamos adicionar um pequeno ajuste em 'dx' ou 'dy'
-                // para tornar o ângulo de rebatida mais interessante, mas fica pra depois.
+                dy = -dy;
+                score++; // <<< INCREMENTA PONTUAÇÃO AQUI
+                console.log("Bateu na barra! Pontos:", score);
             } else {
-                // Passou da altura da barra mas NÃO estava sobre ela horizontalmente
-                // Verifica se realmente saiu da tela por baixo
                  if (ballY + dy > canvas.height - ballRadius) {
-                    gameOver = true; // Define o estado de fim de jogo
+                    gameOver = true;
                     console.log("GAME OVER!");
                  }
             }
         }
-        // Se ainda não chegou na altura exata da barra, continua caindo (não faz nada aqui)
     }
 
-
-    // Move a bola somente se o jogo não acabou
+    // Move a bola
     if (!gameOver) {
         ballX += dx;
         ballY += dy;
     }
 
-
-    // Move a barra (paddle)
+    // Move a barra
     if(rightPressed) {
         paddleX += paddleSpeed;
-        // Impede a barra de sair pela direita
         if (paddleX + paddleWidth > canvas.width){ paddleX = canvas.width - paddleWidth; }
     }
     else if(leftPressed) {
         paddleX -= paddleSpeed;
-        // Impede a barra de sair pela esquerda
         if (paddleX < 0){ paddleX = 0; }
     }
 }
@@ -139,23 +136,20 @@ function gameLoop() {
     // 2. Desenha os elementos
     drawBall();
     drawPaddle();
+    drawScore(); // <<< DESENHA A PONTUAÇÃO AQUI
 
     // 3. Atualiza posições e estado do jogo
-    updateGame(); // Agora inclui verificação de colisão com barra e game over
-
-    // 4. Verifica se o jogo acabou
-    if (gameOver) {
-        // Se sim, desenha a mensagem de Game Over e PARA o loop
+    if (!gameOver) {
+        updateGame();
+    } else {
         drawGameOver();
-        // Poderíamos usar cancelAnimationFrame(animationFrameId) se tivéssemos guardado o ID,
-        // mas simplesmente retornar já impede a próxima chamada a requestAnimationFrame.
-        return;
+        return; // Para o loop
     }
 
-    // 5. Pede ao navegador para chamar gameLoop novamente (continua a animação)
-    animationFrameId = requestAnimationFrame(gameLoop); // Guarda o ID se quisermos cancelar depois
+    // 4. Pede ao navegador para chamar gameLoop novamente
+    animationFrameId = requestAnimationFrame(gameLoop);
 }
 
 // --- Inicia o Jogo ---
-console.log("Iniciando game loop com colisão e game over...");
+console.log("Iniciando game loop com pontuação...");
 gameLoop(); // Inicia a animação
