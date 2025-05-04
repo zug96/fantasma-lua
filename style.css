@@ -1,18 +1,35 @@
-/* Remove margens padrão e esconde barras de rolagem se o canvas couber */
+/* style.css - Layout Otimizado: Título em cima, Canvas Centralizado */
+
 body {
     margin: 0;
-    padding: 0;
-    background-color: #00001a; /* Azul bem escuro / quase preto */
-    display: flex; /* Usado para ajudar a centralizar */
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh; /* Garante que o body ocupe a tela toda */
-    overflow: hidden; /* Esconde barras de rolagem */
+    padding: 20px; /* Adiciona um respiro nas bordas da janela */
+    background-color: #00001a; /* Fundo escuro da PÁGINA inteira */
+    display: flex; /* Usa Flexbox para layout */
+    flex-direction: column; /* EMPILHA os itens: h1 em cima, canvas embaixo */
+    justify-content: center; /* Centraliza o CONTEÚDO (bloco h1+canvas) VERTICALMENTE na página */
+    align-items: center; /* Centraliza os ITENS (h1 e canvas) HORIZONTALMENTE na página */
+    min-height: calc(100vh - 40px); /* Faz o body ocupar pelo menos a altura da tela (descontando padding) */
+    overflow: hidden; /* Evita barras de rolagem desnecessárias */
+    box-sizing: border-box; /* Garante que padding não aumente o tamanho total */
+    font-family: sans-serif; /* Uma fonte padrão para o título */
 }
 
-/* Estilo básico para o canvas */
-canvas#gameCanvas {
-    border: 1px solid #555; /* Borda cinza clara para vermos a área */
-    background-color: #0c0c2a; /* Fundo do canvas um pouco mais claro */
-    display: block; /* Comportamento de bloco */
+h1 {
+    color: #E0E0E0; /* Cor clara para o título */
+    text-align: center; /* Garante centralização do texto dentro do h1 */
+    margin: 0 0 20px 0; /* Remove margens padrão e adiciona espaço ABAIXO do título */
+    padding: 0;
 }
+
+canvas#gameCanvas {
+    border: 1px solid #555; /* Borda para visualizar a área do canvas */
+    background-image: url('imagem_FUNDO_jogo-fantasma-e-a-lua.jpg'); /* Seu fundo */
+    background-size: cover;
+    background-position: center;
+    display: block; /* Comportamento de bloco padrão */
+    /* margin: auto; <- Não precisa mais com flexbox */
+}
+
+
+
+
