@@ -1,0 +1,19 @@
+# IDE/Editor files
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Node dependencies (se usar mais tarde)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Build outputs (se aplicável mais tarde)
+dist/
+build/
+
+# Log files
+*.log

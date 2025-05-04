@@ -1,0 +1,18 @@
+/* Remove margens padrão e esconde barras de rolagem se o canvas couber */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #00001a; /* Azul bem escuro / quase preto */
+    display: flex; /* Usado para ajudar a centralizar */
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Garante que o body ocupe a tela toda */
+    overflow: hidden; /* Esconde barras de rolagem */
+}
+
+/* Estilo básico para o canvas */
+canvas#gameCanvas {
+    border: 1px solid #555; /* Borda cinza clara para vermos a área */
+    background-color: #0c0c2a; /* Fundo do canvas um pouco mais claro */
+    display: block; /* Comportamento de bloco */
+}
